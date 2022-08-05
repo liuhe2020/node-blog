@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/head') %>
+  <body class="d-flex flex-column min-vh-100">
+    <%- include('partials/nav') %> 
+    <div class="mx-4">
+      <h2><%= singlePost.title %></h2>
+      <p><%= singlePost.body %></p>
+    </a>
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#Modal">Edit</button>
+    <button type="button" class="btn btn-danger delete" data-doc="<%= singlePost.id %>">Delete</button>
+  </div>
+
+  <!--Modal-->
+  <div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Edit Post</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!--Edit Form-->
+          <form action="/blogs" method="PUT" class="mx-4">
+            <div class="mb-3">
+              <label for="title" class="form-label">Title</label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                value="<%= singlePost.title %>"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="body" class="form-label">Content</label>
+              <textarea
+                style="min-height: 300px;"
+                class="form-control"
+                id="body"
+                name="body"
+                row="10"
+                height="100%"
+                required
+              ><%= singlePost.body %></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary edit" data-doc="<%= singlePost.id %>">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%- include('./partials/footer.ejs') %> 
+
+    <script>
+        const editButton = document.querySelector('.edit')
+        const deleteButton = document.querySelector('.delete')
+        const title = document.querySelector('#title')
+        const body = document.querySelector('#body')
+
+        editButton.addEventListener('click', () =>{
+          fetch(`/blogs/${editButton.dataset.doc}`,{
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  title:title.value, 
+                  body:body.value, 
+                  id: editButton.dataset.doc
+                })
+            })
+            .then(res=>res.json())
+            .then(window.location.reload())
+            .catch(err=>console.log(err))
+        })
+
+        deleteButton.addEventListener('click', ()=>{
+            fetch(`/blogs/${deleteButton.dataset.doc}`,{
+                method: 'DELETE'
+            })
+            .then(res=>res.json())
+            .then(data => window.location.href = data.redirect)
+            .catch(err=>console.log(err))
+        })
+
+    </script>
+
+  </body>
+</html>

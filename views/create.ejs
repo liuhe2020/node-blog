@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/head') %>
+  <body class="d-flex flex-column min-vh-100">
+    <%- include('partials/nav') %>
+    <form action="/blogs" method="POST" class="mx-4">
+      <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+          type="text"
+          class="form-control"
+          id="title"
+          name="title"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="body" class="form-label">Content</label>
+        <textarea
+          style="min-height: 300px"
+          class="form-control"
+          id="body"
+          name="body"
+          row="3"
+          required
+        ></textarea>
+      </div>
+      <button class="btn btn-success fill">Fill</button>
+      <button class="btn btn-warning reset">Reset</button>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <%- include('./partials/footer.ejs') %>
+
+    <script>
+      const titleField = document.querySelector('#title');
+      const contentField = document.querySelector('#body');
+      const fillButton = document.querySelector('.fill');
+      const resetButton = document.querySelector('.reset');
+
+      fillButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        getRandomContent();
+      });
+
+      resetButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        titleField.value = null;
+        contentField.value = null;
+      });
+
+      // Get random content from wikipedia
+      const getRandomContent = async () => {
+        const res = await fetch(
+          'https://en.wikipedia.org/api/rest_v1/page/random/summary'
+        );
+        const data = await res.json();
+
+        // Fill the form
+        titleField.value = data.title;
+        contentField.value = data.extract;
+      };
+    </script>
+  </body>
+</html>
