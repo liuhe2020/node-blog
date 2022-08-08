@@ -26,7 +26,7 @@ const blog_create_post = (req, res) => {
       if (err) {
         alert(err);
       }
-      console.log('new post written to json');
+      console.log('new post added to json');
     });
 
     res.redirect('/');
@@ -35,12 +35,13 @@ const blog_create_post = (req, res) => {
 
 const blog_delete = (req, res) => {
   const newBlogs = blogs.filter((post) => post.id !== req.params.id);
+  blogs = newBlogs;
 
-  fs.writeFileSync('data.json', JSON.stringify(newBlogs), (err) => {
+  fs.writeFile('data.json', JSON.stringify(blogs), (err) => {
     if (err) {
       alert(err);
     }
-    console.log('new post written to json');
+    console.log('post deleted from json');
   });
 
   res.json({ redirect: '/' });
@@ -52,17 +53,16 @@ const blog_edit = (req, res) => {
   const newBlogs = blogs.map((post) =>
     post.id === req.params.id ? { ...singlePost } : post
   );
+  blogs = newBlogs;
 
-  fs.writeFileSync('data.json', JSON.stringify(newBlogs), (err) => {
+  fs.writeFile('data.json', JSON.stringify(blogs), (err) => {
     if (err) {
       alert(err);
     }
-    console.log('edited post written to json');
-
-    res.json({ message: 'post updated' });
+    console.log('post edited in json');
   });
 
-  res.render('details', { pageTitle: singlePost.title, singlePost });
+  res.json({ message: 'post updated' });
 };
 
 module.exports = {
